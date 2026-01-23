@@ -1,0 +1,18 @@
+/* ZWash Admin - Modular CSS */
+/* 
+ * This file imports all CSS partials.
+ * The original 4892-line file has been split into 12 modular files.
+ */
+
+@import url('./_variables.css');
+@import url('./_base.css');
+@import url('./_layout.css');
+@import url('./_components.css');
+@import url('./_login.css');
+@import url('./_navigation.css');
+@import url('./_cards.css');
+@import url('./_dashboard.css');
+@import url('./_mobile.css');
+@import url('./_mobile-nav.css');
+@import url('./_crm.css');
+@import url('./_mobile-enhanced.css');

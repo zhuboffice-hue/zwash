@@ -1,0 +1,197 @@
+/* ZWash Admin - Layout Styles */
+
+/* ==================== LAYOUT ==================== */
+.app-layout {
+    display: flex;
+    min-height: 100vh;
+}
+
+.sidebar {
+    width: var(--sidebar-width);
+    background: var(--sidebar-bg, linear-gradient(180deg, var(--navy-900) 0%, #1a1f3e 50%, var(--navy-800) 100%));
+    background-size: cover;
+    color: white;
+    position: fixed;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    z-index: 1000;
+    transition: var(--transition-base);
+    box-shadow: 4px 0 30px rgba(0, 0, 0, 0.2);
+}
+
+.sidebar-header {
+    padding: 1.25rem 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    background: rgba(0, 62, 16, 0.15);
+}
+
+.sidebar-header .brand-section {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    width: 100%;
+}
+
+.sidebar-header .logo-container {
+
+    padding: 0;
+    border-radius: var(--radius-md);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.sidebar-header .brand-logo {
+    height: 55px;
+    width: auto;
+    object-fit: contain;
+    background: transparent;
+    border-radius: 0;
+}
+
+.sidebar-header .powered-by {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    font-size: 0.7rem;
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.sidebar-header .powered-by strong {
+    color: white;
+    font-weight: 600;
+}
+
+.sidebar-nav {
+    flex: 1;
+    padding: 1rem 0.75rem;
+    overflow-y: auto;
+    background-color: rgba(1, 51, 16, 0.1);
+}
+
+.nav-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.85rem 1rem;
+    color: rgba(255, 255, 255, 0.6);
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 0.875rem;
+    transition: all 0.2s ease;
+    border-radius: 10px;
+    position: relative;
+    margin: 0.25rem 0;
+}
+
+.nav-item svg {
+    transition: transform 0.2s ease;
+}
+
+.nav-item:hover {
+    color: white;
+    background: rgba(255, 255, 255, 0.08);
+}
+
+.nav-item:hover svg {
+    transform: scale(1.1);
+}
+
+.nav-item.active {
+    color: white;
+    background: var(--primary);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    /* Improve contrast if primary is light, but assuming dark/saturated for now */
+}
+
+.nav-item.active svg {
+    color: white;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
+}
+
+.nav-item.active::before {
+    display: none;
+}
+
+.sidebar-footer {
+    padding: 1rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    background: rgba(0, 0, 0, 0.1);
+}
+
+.user-info {
+    display: flex;
+    align-items: center;
+    gap: 0.625rem;
+    padding: 0.625rem;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: var(--radius-sm);
+    margin-bottom: 0.625rem;
+}
+
+.user-avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: var(--primary-gradient);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    font-size: 0.75rem;
+    object-fit: cover;
+}
+
+.user-details {
+    flex: 1;
+    min-width: 0;
+}
+
+.user-name {
+    display: block;
+    font-weight: 600;
+    font-size: 0.8rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.user-role {
+    display: block;
+    font-size: 0.7rem;
+    color: var(--navy-400);
+    text-transform: capitalize;
+}
+
+.logout-btn {
+    width: 100%;
+    padding: 0.75rem;
+    background: rgba(239, 68, 68, 0.1);
+    border: 1px solid rgba(239, 68, 68, 0.2);
+    color: #fca5a5;
+    border-radius: var(--radius-md);
+    font-weight: 500;
+    cursor: pointer;
+    transition: var(--transition-fast);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+}
+
+.logout-btn:hover {
+    background: rgba(239, 68, 68, 0.2);
+    border-color: rgba(239, 68, 68, 0.3);
+}
+
+.main-content {
+    flex: 1;
+    margin-left: var(--sidebar-width);
+    padding: 1.25rem 1.5rem;
+    min-height: 100vh;
+    background: linear-gradient(135deg, var(--navy-50) 0%, #e9eef6 100%);
+}

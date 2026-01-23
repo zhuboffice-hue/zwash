@@ -1,0 +1,15 @@
+/* ZWash Admin - Base Styles */
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background: var(--navy-50);
+    color: var(--navy-900);
+    line-height: 1.6;
+    overflow-x: hidden;
+}

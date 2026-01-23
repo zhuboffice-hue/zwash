@@ -1,0 +1,133 @@
+/* ZWash Admin - Navigation Styles */
+
+/* ==================== MOBILE NAV ==================== */
+.mobile-nav {
+    display: none;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: white;
+    border-top: 1px solid var(--navy-200);
+    padding: 0.5rem;
+    z-index: 1001;
+    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.1);
+}
+
+.mobile-nav-items {
+    display: flex;
+    justify-content: space-around;
+}
+
+.mobile-nav-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0.5rem 0.75rem;
+    color: var(--navy-500);
+    text-decoration: none;
+    font-size: 0.7rem;
+    font-weight: 500;
+    border-radius: var(--radius-sm);
+    transition: var(--transition-fast);
+}
+
+.mobile-nav-item.active {
+    color: var(--primary);
+    background: rgba(4, 120, 87, 0.1);
+}
+
+/* ==================== RESPONSIVE ==================== */
+/* Tablet and below - Make sidebar closable */
+@media (max-width: 1024px) {
+    :root {
+        --sidebar-width: 260px;
+    }
+
+    .sidebar {
+        transform: translateX(-100%);
+    }
+
+    .sidebar.mobile-open {
+        transform: translateX(0);
+    }
+
+    .main-content {
+        margin-left: 0;
+        padding: 1rem;
+        padding-top: calc(60px + 1rem);
+        padding-bottom: 6rem;
+    }
+
+    .mobile-nav {
+        display: block;
+    }
+
+    /* Show mobile top nav on tablets too */
+    .mobile-top-nav {
+        display: flex;
+    }
+
+    /* Sidebar overlay for tablets */
+    .sidebar-overlay {
+        display: block;
+        position: fixed;
+        inset: 0;
+        background: rgba(26, 31, 58, 0.6);
+        backdrop-filter: blur(4px);
+        z-index: 99;
+    }
+
+    /* Force mobile layout on tablets for better responsiveness */
+    .desktop-table {
+        display: none;
+    }
+
+    .mobile-cards {
+        display: block !important;
+    }
+
+    .quick-stats-row {
+        grid-template-columns: repeat(2, 1fr) !important;
+    }
+}
+
+@media (max-width: 768px) {
+    .page-header {
+        flex-direction: column;
+        align-items: stretch;
+    }
+}
+
+@media (max-width: 480px) {
+
+    /* Keep 2x2 grid on very small screens */
+    .quick-stats-row {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 0.5rem;
+    }
+
+    .quick-stat-card {
+        padding: 0.5rem 0.625rem;
+    }
+
+    .stat-value {
+        font-size: 1.1rem;
+    }
+
+    .stat-label {
+        font-size: 0.6rem;
+    }
+
+    .stat-icon {
+        width: 32px;
+        height: 32px;
+        min-width: 32px;
+    }
+
+    .stat-icon svg {
+        width: 16px;
+        height: 16px;
+    }
+}
