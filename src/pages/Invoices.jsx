@@ -160,7 +160,9 @@ const Invoices = () => {
             if (newPaidTotal >= newTotalPrice) status = 'paid';
             else if (newPaidTotal > 0) status = 'partial';
 
-            await updateDoc(doc(db, 'bookings', paymentInvoice.id), {
+            const collectionName = paymentInvoice.source === 'invoice' ? 'invoices' : 'bookings';
+
+            await updateDoc(doc(db, collectionName, paymentInvoice.id), {
                 price: newTotalPrice, // Save the potentially edited price
                 discount: Number(discount) || 0,
                 extraCharge: Number(extraCharge) || 0,
@@ -171,11 +173,15 @@ const Invoices = () => {
                 updatedAt: serverTimestamp()
             });
 
-            setInvoices(prev => prev.map(inv =>
+            // Update local state for both lists to ensure UI reflects changes immediately
+            const updateList = (list) => list.map(inv =>
                 inv.id === paymentInvoice.id
                     ? { ...inv, price: newTotalPrice, paidAmount: newPaidTotal, paymentStatus: status, paymentMode }
                     : inv
-            ));
+            );
+
+            setInvoices(prev => updateList(prev));
+            setArchivedInvoices(prev => updateList(prev));
 
             setShowPaymentModal(false);
             setPaymentInvoice(null);
@@ -509,10 +515,13 @@ const Invoices = () => {
 
     const totalRevenue = invoices.reduce((sum, inv) => sum + (inv.price || 0), 0);
 
+    // Select active or archived based on tab
+    const currentList = activeTab === 'active' ? invoices : archivedInvoices;
+
     // For employees: only show today's and yesterday's invoices
     const dateFilteredInvoices = isEmployee
-        ? invoices.filter(inv => inv.bookingDate === todayStr || inv.bookingDate === yesterdayStr)
-        : invoices;
+        ? currentList.filter(inv => inv.bookingDate === todayStr || inv.bookingDate === yesterdayStr)
+        : currentList;
 
     const filteredInvoices = dateFilteredInvoices.filter(inv => {
         if (!searchTerm) return true;
@@ -990,10 +999,10 @@ const EditInvoiceModal = ({ invoice, onClose, onSuccess }) => {
                                     onChange={e => {
                                         // Simple split logic
                                         const parts = e.target.value.split(' ');
-                                        setFormData({ 
-                                            ...formData, 
-                                            carMake: parts[0] || '', 
-                                            carModel: parts.slice(1).join(' ') || '' 
+                                        setFormData({
+                                            ...formData,
+                                            carMake: parts[0] || '',
+                                            carModel: parts.slice(1).join(' ') || ''
                                         });
                                     }}
                                     placeholder="Toyota Camry"
@@ -1058,7 +1067,7 @@ const CreateInvoiceModal = ({ onClose, onSuccess, user }) => {
         try {
             // Generate ID similar to bookings but for manual invoices
             const ref = `INV-${Date.now().toString().slice(-6)}`;
-            
+
             await addDoc(collection(db, 'invoices'), {
                 ...formData,
                 bookingReference: ref,
@@ -1089,7 +1098,7 @@ const CreateInvoiceModal = ({ onClose, onSuccess, user }) => {
                 </div>
                 <form onSubmit={handleSubmit}>
                     <div className="modal-body">
-                         <div className="form-row">
+                        <div className="form-row">
                             <div className="form-group">
                                 <label>Date</label>
                                 <input
@@ -1117,17 +1126,17 @@ const CreateInvoiceModal = ({ onClose, onSuccess, user }) => {
                                 placeholder="Customer phone"
                             />
                         </div>
-                         <div className="form-row">
+                        <div className="form-row">
                             <div className="form-group">
                                 <label>Make & Model</label>
                                 <input
                                     value={`${formData.carMake} ${formData.carModel}`.trim()}
                                     onChange={e => {
                                         const parts = e.target.value.split(' ');
-                                        setFormData({ 
-                                            ...formData, 
-                                            carMake: parts[0] || '', 
-                                            carModel: parts.slice(1).join(' ') || '' 
+                                        setFormData({
+                                            ...formData,
+                                            carMake: parts[0] || '',
+                                            carModel: parts.slice(1).join(' ') || ''
                                         });
                                     }}
                                     placeholder="e.g. Honda City"

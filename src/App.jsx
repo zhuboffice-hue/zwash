@@ -11,6 +11,7 @@ import Customers from './pages/Customers';
 import Employees from './pages/Employees';
 import Expenses from './pages/Expenses';
 import Invoices from './pages/Invoices';
+import Analytics from './pages/Analytics';
 import Materials from './pages/Materials';
 import MaterialUsageAnalytics from './pages/MaterialUsageAnalytics';
 import Payroll from './pages/Payroll';
@@ -96,6 +97,9 @@ function AppRoutes() {
         } />
         <Route path="payroll" element={
           <ProtectedRoute permission="payroll"><Payroll /></ProtectedRoute>
+        } />
+        <Route path="analytics" element={
+          <ProtectedRoute permission="analytics"><Analytics /></ProtectedRoute>
         } />
         <Route path="materials" element={
           <ProtectedRoute permission="expenses"><Materials /></ProtectedRoute>

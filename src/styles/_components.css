@@ -141,6 +141,10 @@
     box-shadow: var(--shadow-lg);
 }
 
+.mobile-cards {
+    display: none;
+}
+
 .card-header {
     padding: 1.25rem 1.5rem;
     border-bottom: 1px solid var(--navy-100);
@@ -166,7 +170,7 @@
 /* ==================== STATS CARDS ==================== */
 .quick-stats-row {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
     gap: 1rem;
     margin-bottom: 1.5rem;
 }
@@ -332,6 +336,7 @@
 /* ==================== TABLES ==================== */
 .table-container {
     overflow-x: auto;
+    max-width: 100%;
 }
 
 .data-table {

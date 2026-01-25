@@ -50,9 +50,7 @@
         font-size: 1.5rem;
     }
 
-    .quick-stats-row {
-        grid-template-columns: repeat(2, 1fr);
-    }
+    /* quick-stats-row handles itself with auto-fit */
 }
 
 /* Mobile Breakpoint - Main Layout */
@@ -129,9 +127,8 @@
         height: 16px;
     }
 
-    /* Stats Cards - 2x2 Grid on Mobile */
+    /* Stats Cards - Let auto-fit handle columns, just adjust gap/padding */
     .quick-stats-row {
-        grid-template-columns: repeat(2, 1fr);
         gap: 0.625rem;
         margin-bottom: 1rem;
     }
@@ -379,6 +376,8 @@
     /* Booking Cards */
     .booking-card {
         padding: 1rem;
+        word-break: break-word;
+        /* Ensure long values don't overflow */
     }
 
     .booking-card-actions {
@@ -411,14 +410,12 @@
         font-size: 0.9rem;
     }
 
-    /* CRM Sheet Tabs - Horizontal Scroll */
+    /* CRM Sheet Tabs - Wrap instead of scroll for better visibility */
     .crm-sheet-tabs {
-        display: flex;
-        overflow-x: auto;
-        -webkit-overflow-scrolling: touch;
+        flex-wrap: wrap;
+        overflow-x: visible;
         gap: 0.5rem;
         padding: 0.5rem 0;
-        scrollbar-width: none;
     }
 
     .crm-sheet-tabs::-webkit-scrollbar {
@@ -444,7 +441,8 @@
     }
 
     /* Hide desktop table, show mobile cards for CRM */
-    .desktop-table {
+    .desktop-table,
+    .hidden-on-mobile {
         display: none !important;
     }
 

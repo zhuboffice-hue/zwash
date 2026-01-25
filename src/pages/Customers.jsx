@@ -476,13 +476,26 @@ const EditCustomerModal = ({ customer, onClose, onSuccess, userProfile }) => {
         setLoading(true);
 
         try {
-            await updateDoc(doc(db, 'customers', customer.id), {
-                ...formData,
-                licensePlate: formData.licensePlate.toUpperCase(),
-                lastEditedBy: userProfile?.displayName || 'Staff',
-                lastEditedAt: serverTimestamp(),
-                updatedAt: serverTimestamp()
-            });
+            // Check if it's a "virtual" customer from booking
+            if (customer.id.toString().startsWith('booking-')) {
+                await addDoc(collection(db, 'customers'), {
+                    ...formData,
+                    licensePlate: formData.licensePlate.toUpperCase(),
+                    lastEditedBy: userProfile?.displayName || 'Staff',
+                    lastEditedAt: serverTimestamp(),
+                    createdAt: customer.createdAt || serverTimestamp(), // Preserve original booking date if possible
+                    updatedAt: serverTimestamp(),
+                    bookingCount: 1 // Initial count since they came from a booking
+                });
+            } else {
+                await updateDoc(doc(db, 'customers', customer.id), {
+                    ...formData,
+                    licensePlate: formData.licensePlate.toUpperCase(),
+                    lastEditedBy: userProfile?.displayName || 'Staff',
+                    lastEditedAt: serverTimestamp(),
+                    updatedAt: serverTimestamp()
+                });
+            }
 
             onSuccess();
             onClose();

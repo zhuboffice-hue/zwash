@@ -368,11 +368,11 @@ const CRMHistory = () => {
                     ) : (
                         <>
                             {/* Desktop Table */}
-                            <div className="table-container desktop-table">
+                            <div className="table-container desktop-table hidden-on-mobile">
                                 <table className="data-table crm-data-table">
                                     <thead>
                                         <tr>
-                                            {headers.slice(0, 7).map((header, i) => (
+                                            {headers.map((header, i) => (
                                                 <th key={i}>{header}</th>
                                             ))}
                                         </tr>
@@ -380,7 +380,7 @@ const CRMHistory = () => {
                                     <tbody>
                                         {paginatedData.map((row) => (
                                             <tr key={row.id}>
-                                                {row.data.slice(0, 7).map((cell, cellIndex) => (
+                                                {row.data.map((cell, cellIndex) => (
                                                     <td key={cellIndex}>
                                                         {formatCellValue(cell, cellIndex)}
                                                     </td>
@@ -394,34 +394,42 @@ const CRMHistory = () => {
                             {/* Mobile Cards */}
                             <div className="mobile-cards">
                                 {paginatedData.map((row) => {
-                                    const nameIdx = headers.findIndex(h =>
-                                        h?.toLowerCase().includes('siva') || h?.toLowerCase().includes('name')
-                                    );
-                                    const phoneIdx = headers.findIndex(h =>
-                                        h?.toLowerCase().includes('mobile') || h?.toLowerCase().includes('phone')
-                                    );
-                                    const placeIdx = headers.findIndex(h =>
-                                        h?.toLowerCase().includes('place')
-                                    );
-                                    const vehicleIdx = headers.findIndex(h =>
-                                        h?.toLowerCase().includes('vehicle number')
-                                    );
-                                    const typeIdx = headers.findIndex(h =>
-                                        h?.toLowerCase().includes('vehi type')
-                                    );
+                                    // Generic dynamic mapping for mobile
+                                    // Take up to first 5 columns to display, but max out at actual headers length
+                                    const maxCols = Math.min(headers.length, 5);
+                                    const mobileColumns = headers.slice(0, maxCols);
+
+                                    const titleColumnIndex = 0;
+                                    const titleValue = row.data[titleColumnIndex];
+                                    const formattedTitle = titleValue ? formatCellValue(titleValue, titleColumnIndex) : `Record #${row.id + 1}`;
 
                                     return (
                                         <div key={row.id} className="booking-card">
                                             <div className="booking-card-header">
-                                                <strong>{row.data[nameIdx] || 'Unknown'}</strong>
-                                                <span className="badge badge-confirmed">
-                                                    {getVehicleTypeLabel(row.data[typeIdx])}
-                                                </span>
+                                                <strong>{formattedTitle}</strong>
+                                                {/* Only show vehicle type badge if we find a 'type' column */}
+                                                {headers.some(h => h?.toLowerCase().includes('type')) && (
+                                                    <span className="badge badge-confirmed">
+                                                        {getVehicleTypeLabel(row.data[headers.findIndex(h => h?.toLowerCase().includes('type'))])}
+                                                    </span>
+                                                )}
                                             </div>
                                             <div className="booking-card-body">
-                                                <p><Phone size={14} /> {row.data[phoneIdx] || '-'}</p>
-                                                <p><Car size={14} /> {row.data[vehicleIdx] || '-'}</p>
-                                                <p>{row.data[placeIdx] || '-'}</p>
+                                                {mobileColumns.slice(1).map((header, i) => {
+                                                    const colIndex = i + 1;
+                                                    // Ensure we have data for this column
+                                                    const value = row.data[colIndex];
+
+                                                    // Skip if header is undefined or empty
+                                                    if (!header) return null;
+
+                                                    return (
+                                                        <div key={i} style={{ marginBottom: '0.25rem', fontSize: '0.85rem' }}>
+                                                            <span style={{ color: 'var(--navy-500)', marginRight: '0.5rem', fontWeight: 500 }}>{header}:</span>
+                                                            <span style={{ color: 'var(--navy-900)' }}>{formatCellValue(value, colIndex)}</span>
+                                                        </div>
+                                                    );
+                                                })}
                                             </div>
                                         </div>
                                     );
