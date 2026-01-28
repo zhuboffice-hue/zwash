@@ -31,7 +31,7 @@ import {
 } from 'lucide-react';
 
 const Employees = () => {
-    const { hasPermission, isAdmin, userProfile } = useAuth();
+    const { hasPermission, isAdmin, userProfile, isSuperAdmin } = useAuth();
     const canCreate = hasPermission('employees', 'create');
     const canEdit = hasPermission('employees', 'edit');
     const canDelete = hasPermission('employees', 'delete');
@@ -54,13 +54,25 @@ const Employees = () => {
 
             // Fetch approved employees
             const usersRef = collection(db, 'adminUsers');
-            const approvedQuery = query(usersRef, where('status', '==', 'approved'));
+            let approvedQuery = query(usersRef, where('status', '==', 'approved'));
+
+            if (userProfile?.shopId && !isSuperAdmin) {
+                approvedQuery = query(approvedQuery, where('shopId', '==', userProfile.shopId));
+            }
+
             const approvedSnapshot = await getDocs(approvedQuery);
             const approved = approvedSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
 
             // Fetch pending users for admin/manager
             if (isAdmin || canEdit) {
-                const pendingQuery = query(usersRef, where('status', '==', 'pending'));
+                let pendingQuery = query(usersRef, where('status', '==', 'pending'));
+
+                // Pending users are in 'employeeInvites' collection usually, but here it queries 'adminUsers'
+                // Wait, 'adminUsers' are created when they login. So we filter by shopId IF it exists on them (from invite)
+                if (userProfile?.shopId && !isSuperAdmin) {
+                    pendingQuery = query(pendingQuery, where('shopId', '==', userProfile.shopId));
+                }
+
                 const pendingSnapshot = await getDocs(pendingQuery);
                 const pending = pendingSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
                 setPendingUsers(pending);
@@ -567,6 +579,7 @@ const InviteModal = ({ onClose, onSuccess }) => {
                 email: email,
                 role: selectedRole, // Use state instead of form data for consistency
                 permissions: customPermissions, // Save custom permissions
+                shopId: userProfile?.shopId, // Inherit shopId
                 invitedBy: userProfile?.email,
                 status: 'pending',
                 createdAt: serverTimestamp()

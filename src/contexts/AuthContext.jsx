@@ -212,6 +212,7 @@ export function AuthProvider({ children }) {
                         displayName: firebaseUser.displayName || (role === ROLES.SUPERADMIN ? 'Super Admin' : 'Admin'),
                         photoURL: firebaseUser.photoURL,
                         role: role,
+                        shopId: isFirstUser || role === ROLES.SUPERADMIN ? 'HEAD_OFFICE' : firebaseUser.uid, // First admin defines their own shop
                         status: 'approved',
                         createdAt: serverTimestamp(),
                         updatedAt: serverTimestamp()
@@ -246,6 +247,7 @@ export function AuthProvider({ children }) {
                             photoURL: firebaseUser.photoURL,
                             role: inviteData.role || ROLES.EMPLOYEE,
                             permissions: inviteData.permissions || null, // Inherit permissions from invite
+                            shopId: inviteData.shopId || (inviteData.role === ROLES.ADMIN ? firebaseUser.uid : null), // Inherit or Create Shop ID
                             status: 'approved', // Auto-approve since they were invited
                             invitedBy: inviteData.invitedBy,
                             needsOnboarding: true,

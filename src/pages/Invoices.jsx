@@ -6,7 +6,7 @@ import { FileText, Download, Eye, Search, Printer, Receipt, MessageCircle, Copy,
 import * as XLSX from 'xlsx';
 
 const Invoices = () => {
-    const { hasPermission, isEmployee, user, userProfile } = useAuth();
+    const { hasPermission, isEmployee, user, userProfile, isSuperAdmin } = useAuth();
 
     // Get today and yesterday dates for employee filtering
     const today = new Date();
@@ -54,13 +54,21 @@ const Invoices = () => {
             setLoading(true);
 
             // Fetch completed bookings
-            const bookingsSnap = await getDocs(query(collection(db, 'bookings')));
+            let bookingsQuery = collection(db, 'bookings');
+            if (userProfile?.shopId && !isSuperAdmin) {
+                bookingsQuery = query(bookingsQuery, where('shopId', '==', userProfile.shopId));
+            }
+            const bookingsSnap = await getDocs(query(bookingsQuery));
             const completedBookings = bookingsSnap.docs
                 .map(d => ({ id: d.id, ...d.data(), source: 'booking' }))
                 .filter(b => b.status === 'completed' && !b.isArchived);
 
             // Fetch manual invoices
-            const invoicesSnap = await getDocs(query(collection(db, 'invoices')));
+            let invoicesQuery = collection(db, 'invoices');
+            if (userProfile?.shopId && !isSuperAdmin) {
+                invoicesQuery = query(invoicesQuery, where('shopId', '==', userProfile.shopId));
+            }
+            const invoicesSnap = await getDocs(query(invoicesQuery));
             const manualInvoices = invoicesSnap.docs
                 .map(d => ({ id: d.id, ...d.data(), source: 'invoice' }));
 
@@ -929,6 +937,7 @@ const Invoices = () => {
                     onClose={() => setShowCreateModal(false)}
                     onSuccess={fetchInvoices}
                     user={user}
+                    userProfile={userProfile}
                 />
             )}
         </div >
@@ -1047,7 +1056,7 @@ const EditInvoiceModal = ({ invoice, onClose, onSuccess }) => {
     );
 };
 
-const CreateInvoiceModal = ({ onClose, onSuccess, user }) => {
+const CreateInvoiceModal = ({ onClose, onSuccess, user, userProfile }) => {
     const [formData, setFormData] = useState({
         customerName: '',
         contactPhone: '',
@@ -1076,6 +1085,7 @@ const CreateInvoiceModal = ({ onClose, onSuccess, user }) => {
                 paymentStatus: 'unpaid',
                 paidAmount: 0,
                 createdBy: user?.uid || 'unknown',
+                shopId: userProfile?.shopId,
                 createdAt: serverTimestamp(),
                 isManual: true
             });

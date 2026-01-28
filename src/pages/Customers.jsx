@@ -35,7 +35,7 @@ import {
 import * as XLSX from 'xlsx';
 
 const Customers = () => {
-    const { hasPermission, userProfile, isAdmin } = useAuth();
+    const { hasPermission, userProfile, isAdmin, isSuperAdmin } = useAuth();
     const [customers, setCustomers] = useState([]);
     const [loading, setLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState('');
@@ -53,12 +53,20 @@ const Customers = () => {
             setLoading(true);
 
             // Fetch from customers collection
-            const customersQuery = query(collection(db, 'customers'), orderBy('createdAt', 'desc'));
+            let customersQuery = collection(db, 'customers');
+            if (userProfile?.shopId && !isSuperAdmin) {
+                customersQuery = query(customersQuery, where('shopId', '==', userProfile.shopId));
+            }
+            customersQuery = query(customersQuery, orderBy('createdAt', 'desc'));
             const customersSnapshot = await getDocs(customersQuery);
             const customersData = customersSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data(), source: 'customers' }));
 
             // Also fetch unique customers from bookings
-            const bookingsQuery = query(collection(db, 'bookings'), orderBy('createdAt', 'desc'));
+            let bookingsQuery = collection(db, 'bookings');
+            if (userProfile?.shopId && !isSuperAdmin) {
+                bookingsQuery = query(bookingsQuery, where('shopId', '==', userProfile.shopId));
+            }
+            bookingsQuery = query(bookingsQuery, orderBy('createdAt', 'desc'));
             const bookingsSnapshot = await getDocs(bookingsQuery);
 
             // Create a map of unique customers by phone or license plate
@@ -374,6 +382,7 @@ const Customers = () => {
 };
 
 const CustomerModal = ({ onClose, onSuccess }) => {
+    const { userProfile } = useAuth();
     const [loading, setLoading] = useState(false);
 
     const handleSubmit = async (e) => {
@@ -391,7 +400,9 @@ const CustomerModal = ({ onClose, onSuccess }) => {
                 carMake: formData.get('carMake'),
                 carModel: formData.get('carModel'),
                 licensePlate: formData.get('licensePlate').toUpperCase(),
+                licensePlate: formData.get('licensePlate').toUpperCase(),
                 bookingCount: 0,
+                shopId: userProfile?.shopId,
                 createdAt: serverTimestamp()
             });
 
@@ -483,8 +494,9 @@ const EditCustomerModal = ({ customer, onClose, onSuccess, userProfile }) => {
                     licensePlate: formData.licensePlate.toUpperCase(),
                     lastEditedBy: userProfile?.displayName || 'Staff',
                     lastEditedAt: serverTimestamp(),
-                    createdAt: customer.createdAt || serverTimestamp(), // Preserve original booking date if possible
+                    bookedAt: customer.createdAt || serverTimestamp(), // Preserve original booking date if possible
                     updatedAt: serverTimestamp(),
+                    shopId: userProfile?.shopId,
                     bookingCount: 1 // Initial count since they came from a booking
                 });
             } else {
